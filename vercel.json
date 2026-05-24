@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/grok", "destination": "/api/grok.cjs" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
