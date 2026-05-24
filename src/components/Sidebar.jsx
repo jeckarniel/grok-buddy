@@ -24,7 +24,6 @@ export default function Sidebar({
           <div className="sidebar-logo"><span className="brand-mark">V</span> Vibe AI</div>
           <div className="creator-name">Greggy Company</div>
         </div>
-        {isMobile && <button className="close-btn" onClick={onClose} aria-label="Close menu">x</button>}
       </div>
 
       <div className="sidebar-controls">
@@ -65,7 +64,6 @@ export default function Sidebar({
             onClick={() => { onSelectChat(chat.id); if (isMobile) onClose() }}
           >
             <span className="chat-item-title">{chat.title}</span>
-            <button className="chat-delete" onClick={e => { e.stopPropagation(); onDeleteChat(chat.id) }}>x</button>
           </div>
         ))}
       </div>
