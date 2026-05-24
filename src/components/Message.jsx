@@ -38,33 +38,10 @@ function formatContent(content) {
   })
 }
 
-function MessageAvatar({ role }) {
-  if (role === 'assistant') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="avatar-icon">
-        <path d="M12 2l2.2 5.6L20 10l-5.8 2.4L12 18l-2.2-5.6L4 10l5.8-2.4L12 2z" />
-        <circle cx="12" cy="10" r="1.2" />
-      </svg>
-    )
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="avatar-icon">
-      <path d="M12 12.2a4.2 4.2 0 1 0-4.2-4.2 4.2 4.2 0 0 0 4.2 4.2z" />
-      <path d="M4 21a8 8 0 0 1 16 0" />
-    </svg>
-  )
-}
-
 export default function Message({ role, content }) {
   return (
     <div className={`message message-${role}`}>
-      <div className="message-avatar">
-        <MessageAvatar role={role} />
-      </div>
       <div className="message-content">
-        {role === 'assistant' && <div className="message-label">AI assistant</div>}
-        {role === 'user' && <div className="message-label">You</div>}
         {formatContent(content)}
       </div>
     </div>

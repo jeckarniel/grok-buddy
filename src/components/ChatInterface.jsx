@@ -109,23 +109,7 @@ const ChatInterface = () => {
       <div className="chat-messages">
         {messages.map((msg) => (
           <div key={msg.id} className={`message-row ${msg.isAi ? 'ai-row' : 'user-row'}`}>
-            {msg.isAi && (
-              /* AI Avatar: Unique Star Icon */
-              <div className="msg-icon ai-msg-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2L14.85 8.65L22 9.24L16.5 13.97L18.18 21L12 17.27L5.82 21L7.5 13.97L2 9.24L9.15 8.65L12 2Z" fill="#6366f1"/>
-                </svg>
-              </div>
-            )}
             <div className="message-bubble">{msg.text}</div>
-            {!msg.isAi && (
-              /* User Avatar: Human/Person Icon */
-              <div className="msg-icon user-msg-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-                </svg>
-              </div>
-            )}
           </div>
         ))}
       </div>

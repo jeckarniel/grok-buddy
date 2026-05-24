@@ -119,9 +119,11 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const [loading, setLoading] = useState(false)
   const [model, setModel] = useState('openai/gpt-oss-120b')
   const [attachments, setAttachments] = useState([])
+  const [menuOpen, setMenuOpen] = useState(false)
   const bottomRef = useRef(null)
   const textareaRef = useRef(null)
   const fileInputRef = useRef(null)
+  const menuRef = useRef(null)
   const attachmentsRef = useRef([])
 
   const { chats, createChat, updateChatTitle, deleteChat } = useChats(user.id)
@@ -138,6 +140,20 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     return () => {
       attachmentsRef.current.forEach(file => URL.revokeObjectURL(file.url))
     }
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false)
+      }
+    }
+
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   const loadMessages = async (chatId) => {
@@ -295,13 +311,35 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
           <button className="burger-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
             <span></span><span></span><span></span>
           </button>
-          <span className="topbar-title"><span className="brand-mark">V</span> Vibe AI</span>
+          <span className="topbar-title">
+            <div className={`ai-head-container ${loading ? 'ai-shining' : ''}`} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L14.85 8.65L22 9.24L16.5 13.97L18.18 21L12 17.27L5.82 21L7.5 13.97L2 9.24L9.15 8.65L12 2Z" fill="#6366f1"/>
+                <circle cx="12" cy="12" r="3" fill="white" fillOpacity="0.4" />
+              </svg>
+            </div>
+            Vibe AI
+          </span>
           <select className="model-select" value={model} onChange={e => setModel(e.target.value)}>
             <option value="openai/gpt-oss-120b">gpt-oss-120b</option>
             <option value="openai/gpt-oss-20b">gpt-oss-20b</option>
             <option value="llama-3.3-70b-versatile">llama-3.3-70b</option>
           </select>
-          <button className="signout-btn" onClick={onSignOut} title="Sign out">Sign out</button>
+          
+          <div className="menu-wrapper" ref={menuRef} style={{ position: 'relative' }}>
+            <button className="icon-btn" onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+              </svg>
+            </button>
+            {menuOpen && (
+              <div className="menu-dropdown">
+                <button className="menu-item" onClick={() => { setMenuOpen(false); setSidebarOpen(true); }}>History</button>
+                <hr className="menu-divider" />
+                <button className="menu-item logout-btn" onClick={onSignOut}>Sign out</button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="messages-area">
