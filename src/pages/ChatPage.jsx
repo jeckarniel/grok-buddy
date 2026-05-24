@@ -85,6 +85,7 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     const content = text || input.trim()
     if (!content || loading) return
     setInput('')
+    if (textareaRef.current) textareaRef.current.style.height = 'inherit';
 
     let chatId = activeChatId
     if (!chatId) {
@@ -147,6 +148,12 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     }
   }
 
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+    e.target.style.height = 'inherit';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
   return (
     <div className="chat-layout">
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
@@ -208,31 +215,28 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
         </div>
 
         <div className="input-area">
-          <div className="model-selector-pill">
-            <button className="model-pill-btn" type="button">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-              </svg>
-              <span>{model === 'openai/gpt-oss-120b' ? 'GPT Elite' : model === 'openai/gpt-oss-20b' ? 'GPT Fast' : 'Llama 3.3'}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
-                <path d="m6 9 6 6 6-9"/>
-              </svg>
-            </button>
-            <select className="model-select-hidden" value={model} onChange={e => setModel(e.target.value)}>
-              <option value="openai/gpt-oss-120b">gpt-oss-120b (Elite)</option>
-              <option value="openai/gpt-oss-20b">gpt-oss-20b (Fast)</option>
-              <option value="llama-3.3-70b-versatile">llama-3.3-70b (Versatile)</option>
-            </select>
-          </div>
           <div className="input-box">
             <textarea
               ref={textareaRef}
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder="Ask anything about code..."
               rows={1}
             />
+            <div className="model-selector-pill">
+              <button className="model-pill-btn" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                </svg>
+                <span>{model === 'openai/gpt-oss-120b' ? 'GPT(Elite)' : model === 'openai/gpt-oss-20b' ? 'GPT(Fast)' : 'Llama(Versatile)'}</span>
+              </button>
+              <select className="model-select-hidden" value={model} onChange={e => setModel(e.target.value)}>
+                <option value="openai/gpt-oss-120b">GPT(Elite)</option>
+                <option value="openai/gpt-oss-20b">GPT(Fast)</option>
+                <option value="llama-3.3-70b-versatile">Llama(Versatile)</option>
+              </select>
+            </div>
             <button className="send-btn" onClick={() => handleSend()} disabled={!input.trim() || loading}>
               {loading ? '...' : 'Send'}
             </button>
