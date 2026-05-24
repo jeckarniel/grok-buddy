@@ -19,17 +19,14 @@ export function useAuth() {
   }, [])
 
   const signInWithGoogle = async () => {
-  await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: 'https://grok-buddy-h7av9pruv-jeckarniels-projects.vercel.app',
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://grok-buddy-h7av9pruv-jeckarniels-projects.vercel.app',
+        flowType: 'implicit',
       }
-    }
-  })
-}
+    })
+  }
 
   const signOut = async () => {
     await supabase.auth.signOut()
