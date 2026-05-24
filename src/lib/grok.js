@@ -1,3 +1,8 @@
+/*
+   Grok API Utility
+   Client-side handler for sending message arrays to the Vercel/Node proxy.
+   Includes system prompt configuration and attachment behavior rules.
+*/
 export async function sendToGrok(messages, model = 'openai/gpt-oss-120b', onChunk) {
   const response = await fetch('/api/grok', {
     method: 'POST',

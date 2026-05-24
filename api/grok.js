@@ -1,3 +1,8 @@
+/*
+   Serverless Proxy: Grok Completion
+   Validates requests, injects secrets from environment variables, 
+   and forwards payloads to the Groq API infrastructure.
+*/
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -23,8 +28,10 @@ module.exports = async function handler(req, res) {
       .filter(message => (
         message &&
         ['system', 'user', 'assistant'].includes(message.role) &&
-        typeof message.content === 'string' &&
-        message.content.trim()
+        (
+          (typeof message.content === 'string' && message.content.trim()) ||
+          Array.isArray(message.content)
+        )
       ))
       .map(message => ({
         role: message.role,
@@ -38,7 +45,7 @@ module.exports = async function handler(req, res) {
     }
 
     const payload = {
-      model: typeof body.model === 'string' && body.model.trim() ? body.model : 'openai/gpt-oss-120b',
+      model: typeof body.model === 'string' && body.model.trim() ? body.model : 'llama-3.2-90b-vision-preview',
       messages: validMessages,
       stream: false
     }

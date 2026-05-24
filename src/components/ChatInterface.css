@@ -1,4 +1,7 @@
-/* Main Layout Wrapper and Header */
+/*
+   Main Layout & Header
+   Controls the primary flex container and the top branding bar.
+*/
 .chat-header {
   display: flex;
   justify-content: space-between;
@@ -8,7 +11,6 @@
   position: relative;
 }
 
-/* AI Brand Identity and Shining Logo Animation */
 .ai-brand {
   display: flex;
   align-items: center;
@@ -22,17 +24,16 @@
   100% { filter: drop-shadow(0 0 2px rgba(99, 102, 241, 0.4)) brightness(1); transform: scale(1); }
 }
 
-/* Applied when the AI is processing/typing */
+/* Active state for AI icon during typing */
 .ai-shining {
   animation: ai-glow 2s infinite ease-in-out;
 }
 
-/* Dropdown Menu Container and Trigger */
+/* Navigation Menu Components */
 .menu-wrapper {
   position: relative;
 }
 
-/* Position and visual styling for the menu overlay */
 .menu-dropdown {
   position: absolute;
   right: 0;
@@ -46,7 +47,6 @@
   z-index: 1000;
 }
 
-/* Interactive menu items */
 .menu-item {
   display: block;
   width: 100%;
@@ -59,7 +59,6 @@
 
 .menu-item:hover { background: #f9f9f9; }
 
-/* Scrollable viewport for chat history */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -69,7 +68,7 @@
   gap: 1rem;
 }
 
-/* Flex rows for message bubbles to align left or right */
+/* Message Bubble Layout */
 .message-row {
   display: flex;
   align-items: flex-end;
@@ -80,7 +79,6 @@
 .ai-row { align-self: flex-start; }
 .user-row { align-self: flex-end; }
 
-/* Styling for the text containers inside messages */
 .message-bubble {
   padding: 10px 16px;
   border-radius: 18px;
@@ -99,7 +97,7 @@
   border-bottom-left-radius: 4px;
 }
 
-/* Avatar/Icon containers for chat participants */
+/* Avatar Container Styles */
 .msg-icon {
   width: 32px;
   height: 32px;
@@ -110,11 +108,10 @@
   flex-shrink: 0;
 }
 
-/* participant-specific icon colors */
-.user-msg-icon { background: #e2e8f0; color: #64748b; }
+.user-msg-icon { background: #e2e8f0; color: #475569; }
 .ai-msg-icon { background: #f0f4ff; color: #6366f1; }
 
-/* Visual separation in the menu */
+/* Input Area & Universal File Uploader */
 .menu-divider {
   margin: 4px 0;
   border: none;
@@ -123,14 +120,12 @@
 
 .logout-btn { color: #ff4d4d; }
 
-/* Floating bar for user input and file uploads */
 .input-row-container {
   padding: 1rem;
   border-top: 1px solid #eee;
   background: #fff;
 }
 
-/* Row alignment for typing controls */
 .typing-area {
   display: flex;
   align-items: center;
@@ -145,7 +140,7 @@
   outline: none;
 }
 
-/* Box to display thumbnails or file icons before sending */
+/* Flexible File Preview Box */
 .upload-preview-box {
   position: relative;
   min-width: 64px;
