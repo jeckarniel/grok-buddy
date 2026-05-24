@@ -22,12 +22,30 @@ Always provide complete, working code. Never truncate. Use markdown code blocks 
   })
 
   if (!response.ok) {
-    const err = await response.json()
-    throw new Error(err.error?.message || 'Grok API error')
+    const err = await readJson(response)
+    throw new Error(getErrorMessage(err) || `Grok API error (${response.status})`)
   }
 
-  const data = await response.json()
+  const data = await readJson(response)
   const fullText = data.choices?.[0]?.message?.content || ''
   onChunk(fullText, fullText)
   return fullText
+}
+
+async function readJson(response) {
+  const text = await response.text()
+  if (!text) return {}
+
+  try {
+    return JSON.parse(text)
+  } catch {
+    return { error: { message: text } }
+  }
+}
+
+function getErrorMessage(err) {
+  if (typeof err?.error === 'string') return err.error
+  if (typeof err?.error?.message === 'string') return err.error.message
+  if (typeof err?.message === 'string') return err.message
+  return ''
 }
