@@ -173,12 +173,6 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
             <span></span><span></span><span></span>
           </button>
           <span className="topbar-title">
-            <div className={`ai-head-container ${loading ? 'ai-shining' : ''}`} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L14.85 8.65L22 9.24L16.5 13.97L18.18 21L12 17.27L5.82 21L7.5 13.97L2 9.24L9.15 8.65L12 2Z" fill="#6366f1"/>
-                <circle cx="12" cy="12" r="3" fill="white" fillOpacity="0.4" />
-              </svg>
-            </div>
             Vibe AI
           </span>
           <select className="model-select" value={model} onChange={e => setModel(e.target.value)}>
