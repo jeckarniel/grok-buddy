@@ -374,6 +374,26 @@ button {
   border-color: #ef4444;
 }
 
+.logout-sidebar-btn-small {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.logout-sidebar-btn-small:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
 .sidebar-user {
   min-height: 84px;
   padding: 14px 18px;
