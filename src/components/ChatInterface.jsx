@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './ChatInterface.css';
 
 const ChatInterface = () => {
@@ -7,6 +7,7 @@ const ChatInterface = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
+  const menuRef = useRef(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -22,6 +23,20 @@ const ChatInterface = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="chat-wrapper">
       {/* Header with Menu and Logout */}
@@ -36,7 +51,7 @@ const ChatInterface = () => {
           <span className="ai-name">Vibe AI</span>
         </div>
 
-        <div className="menu-wrapper">
+        <div className="menu-wrapper" ref={menuRef}>
           <button className="icon-btn" onClick={() => setMenuOpen(!menuOpen)}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
@@ -56,7 +71,12 @@ const ChatInterface = () => {
       </div>
 
       {/* Chat Area - Implementation specific */}
-      <div className="chat-messages"></div>
+      <div className="chat-messages">
+        {/* Messages would be mapped here */}
+        <div className="message-empty-state">
+          Start a conversation with Vibe AI
+        </div>
+      </div>
 
       {/* Input Area with Upload and Preview */}
       <div className="input-row-container">
