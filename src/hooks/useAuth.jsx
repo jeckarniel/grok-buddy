@@ -22,7 +22,7 @@ export function useAuth() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://grok-buddy-h7av9pruv-jeckarniels-projects.vercel.app',
+        redirectTo: window.location.origin,
         flowType: 'implicit',
       }
     })
