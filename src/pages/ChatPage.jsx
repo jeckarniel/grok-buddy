@@ -28,10 +28,12 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [model, setModel] = useState('openai/gpt-oss-120b')
+  const [showModelMenu, setShowModelMenu] = useState(false)
   const [displaySuggestions, setDisplaySuggestions] = useState(SUGGESTION_POOL.slice(0, 4))
   const [isFading, setIsFading] = useState(false)
   const bottomRef = useRef(null)
   const textareaRef = useRef(null)
+  const menuRef = useRef(null)
 
   const { chats, createChat, updateChatTitle, deleteChat } = useChats(user.id)
 
@@ -56,6 +58,17 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
 
     return () => clearInterval(interval);
   }, [messages.length]);
+
+  // Handles clicking outside the model menu to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowModelMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const loadMessages = async (chatId) => {
     const { data } = await supabase
@@ -224,18 +237,43 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
               placeholder="Ask anything about code..."
               rows={1}
             />
-            <div className="model-selector-pill">
-              <button className="model-pill-btn" type="button">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <div className="model-selector-container" ref={menuRef}>
+              <button 
+                className={`model-icon-only-btn ${showModelMenu ? 'active' : ''}`} 
+                onClick={() => setShowModelMenu(!showModelMenu)}
+                title="Change Model"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
                 </svg>
-                <span>{model === 'openai/gpt-oss-120b' ? 'GPT(Elite)' : model === 'openai/gpt-oss-20b' ? 'GPT(Fast)' : 'Llama(Versatile)'}</span>
               </button>
-              <select className="model-select-hidden" value={model} onChange={e => setModel(e.target.value)}>
-                <option value="openai/gpt-oss-120b">GPT(Elite)</option>
-                <option value="openai/gpt-oss-20b">GPT(Fast)</option>
-                <option value="llama-3.3-70b-versatile">Llama(Versatile)</option>
-              </select>
+              
+              {showModelMenu && (
+                <div className="model-popup-menu">
+                  <div className="menu-header">Select Intelligence</div>
+                  <button 
+                    className={`menu-opt ${model === 'openai/gpt-oss-120b' ? 'selected' : ''}`}
+                    onClick={() => { setModel('openai/gpt-oss-120b'); setShowModelMenu(false); }}
+                  >
+                    <span className="opt-name">gpt(elite)</span>
+                    <span className="opt-desc">Most capable for complex logic</span>
+                  </button>
+                  <button 
+                    className={`menu-opt ${model === 'openai/gpt-oss-20b' ? 'selected' : ''}`}
+                    onClick={() => { setModel('openai/gpt-oss-20b'); setShowModelMenu(false); }}
+                  >
+                    <span className="opt-name">gpt(fat)</span>
+                    <span className="opt-desc">Speed optimized responses</span>
+                  </button>
+                  <button 
+                    className={`menu-opt ${model === 'llama-3.3-70b-versatile' ? 'selected' : ''}`}
+                    onClick={() => { setModel('llama-3.3-70b-versatile'); setShowModelMenu(false); }}
+                  >
+                    <span className="opt-name">Illama(Versalite)</span>
+                    <span className="opt-desc">Open source power</span>
+                  </button>
+                </div>
+              )}
             </div>
             <button className="send-btn" onClick={() => handleSend()} disabled={!input.trim() || loading}>
               {loading ? '...' : 'Send'}

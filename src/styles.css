@@ -1001,10 +1001,6 @@ button {
     flex-basis: 100%;
   }
 
-  .input-box {
-    flex-wrap: wrap;
-  }
-
   .upload-btn {
     width: 100%;
     justify-content: center;
