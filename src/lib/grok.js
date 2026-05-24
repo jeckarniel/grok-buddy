@@ -1,11 +1,8 @@
-const GROK_API_KEY = import.meta.env.VITE_GROK_API_KEY
-
 export async function sendToGrok(messages, onChunk) {
-  const response = await fetch('https://api.x.ai/v1/chat/completions', {
+  const response = await fetch('/api/grok', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${GROK_API_KEY}`
     },
     body: JSON.stringify({
       model: 'grok-3',
