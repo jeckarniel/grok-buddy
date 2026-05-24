@@ -19,8 +19,11 @@ export default async function handler(req, res) {
     })
 
     const data = await response.json()
+    console.log('Grok response status:', response.status)
+    console.log('Grok response:', JSON.stringify(data).slice(0, 200))
     return res.status(response.status).json(data)
   } catch (err) {
+    console.error('Proxy error:', err.message)
     return res.status(500).json({ error: { message: err.message } })
   }
 }
