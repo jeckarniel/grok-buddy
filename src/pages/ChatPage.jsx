@@ -5,11 +5,20 @@ import { useChats } from '../hooks/useChats'
 import { supabase } from '../lib/supabase'
 import { sendToGrok } from '../lib/grok'
 
-const SUGGESTIONS = [
+const SUGGESTION_POOL = [
   'Build a REST API with Node.js and Express',
   'Create a React component with hooks',
   'Write a Python web scraper',
   'Set up a PostgreSQL database schema',
+  'Implement an authentication system using JWT',
+  'Design a responsive landing page with Tailwind CSS',
+  'Configure a Docker container for a Node application',
+  'Optimize SQL queries for better performance',
+  'Create a real-time chat with Socket.io',
+  'Build a mobile app with React Native',
+  'Write unit tests using Jest and React Testing Library',
+  'Deploy a full-stack app to Vercel and Supabase',
+  'Explore GraphQL with Apollo Client',
 ]
 
 export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
@@ -19,6 +28,8 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [model, setModel] = useState('openai/gpt-oss-120b')
+  const [displaySuggestions, setDisplaySuggestions] = useState(SUGGESTION_POOL.slice(0, 4))
+  const [isFading, setIsFading] = useState(false)
   const bottomRef = useRef(null)
   const textareaRef = useRef(null)
 
@@ -27,6 +38,24 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Handles the random rotation of suggestions every 5 seconds
+  useEffect(() => {
+    if (messages.length > 0) return;
+
+    const interval = setInterval(() => {
+      setIsFading(true); // Trigger fade out
+      
+      setTimeout(() => {
+        const shuffled = [...SUGGESTION_POOL].sort(() => 0.5 - Math.random());
+        setDisplaySuggestions(shuffled.slice(0, 4));
+        setIsFading(false); // Trigger fade in
+      }, 500); // Duration should match CSS transition
+      
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [messages.length]);
 
   const loadMessages = async (chatId) => {
     const { data } = await supabase
@@ -166,8 +195,15 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
               <h2>What can I help you build?</h2>
               <p>Your full-stack AI coding assistant, powered by Groq</p>
               <div className="suggestions">
-                {SUGGESTIONS.map((s, i) => (
-                  <button key={i} className="suggestion-chip" onClick={() => handleSend(s)}>{s}</button>
+                {displaySuggestions.map((s, i) => (
+                  <button 
+                    key={s} 
+                    className={`suggestion-chip ${isFading ? 'fading' : ''}`} 
+                    onClick={() => handleSend(s)}
+                    style={{ transitionDelay: `${i * 50}ms` }}
+                  >
+                    {s}
+                  </button>
                 ))}
               </div>
             </div>

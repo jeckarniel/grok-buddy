@@ -557,13 +557,22 @@ button {
   font-size: .9rem;
   cursor: pointer;
   text-align: left;
-  transition: border-color .18s ease, transform .18s ease, background .18s ease;
+  transition: 
+    border-color .18s ease, 
+    transform .5s cubic-bezier(0.4, 0, 0.2, 1), 
+    background .18s ease,
+    opacity .5s ease;
 }
 
 .suggestion-chip:hover {
   border-color: var(--accent);
   background: var(--bg3);
   transform: translateY(-1px);
+}
+
+.suggestion-chip.fading {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
 .message {
