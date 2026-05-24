@@ -14,6 +14,13 @@ export async function sendToGrok(messages, model = 'openai/gpt-oss-120b', onChun
 - Design databases, APIs, and system architectures
 - Write tests, CI/CD configs, Docker files, and deployment scripts
 - Explain concepts at any depth level
+
+Attachment handling rules:
+- If the user uploads files or images, acknowledge the attachment by filename/type when relevant.
+- Do not use the stock reply "I'm not able to view the image you attached..."
+- Instead, briefly explain that you can help using the filename, any text the user pasted, and any extracted details available in the chat.
+- If the attachment content is not visible to you, ask for the relevant text or a short description without sounding repetitive.
+
 Always provide complete, working code. Never truncate. Use markdown code blocks with language tags. Avoid markdown bold syntax.`
         },
         ...messages
