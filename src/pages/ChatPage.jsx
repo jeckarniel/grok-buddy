@@ -119,11 +119,9 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const [loading, setLoading] = useState(false)
   const [model, setModel] = useState('openai/gpt-oss-120b')
   const [attachments, setAttachments] = useState([])
-  const [menuOpen, setMenuOpen] = useState(false)
   const bottomRef = useRef(null)
   const textareaRef = useRef(null)
   const fileInputRef = useRef(null)
-  const menuRef = useRef(null)
   const attachmentsRef = useRef([])
 
   const { chats, createChat, updateChatTitle, deleteChat } = useChats(user.id)
@@ -140,20 +138,6 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     return () => {
       attachmentsRef.current.forEach(file => URL.revokeObjectURL(file.url))
     }
-  }, [])
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false)
-      }
-    }
-
-    if (menuOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   const loadMessages = async (chatId) => {
@@ -325,28 +309,6 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
             <option value="openai/gpt-oss-20b">gpt-oss-20b</option>
             <option value="llama-3.3-70b-versatile">llama-3.3-70b</option>
           </select>
-          
-          <div className="menu-wrapper" ref={menuRef}>
-            <button className="icon-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Open settings menu">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
-              </svg>
-            </button>
-            {menuOpen && (
-              <div className="menu-dropdown">
-                <button className="menu-item" onClick={() => { setMenuOpen(false); setSidebarOpen(true); }}>
-                  History
-                </button>
-                <hr className="menu-divider" />
-                <button className="menu-item logout-btn" onClick={onSignOut}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-                  </svg>
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="messages-area">

@@ -10,7 +10,6 @@ const ChatInterface = () => {
   /* UI State: Tracks if AI is typing, the current text input, and menu visibility */
   const [isTyping, setIsTyping] = useState(false);
   const [message, setMessage] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
   
   /* Data State: Stores metadata for any uploaded file and the conversation history */
   const [uploadData, setUploadData] = useState({ url: null, name: null, type: null });
@@ -20,7 +19,6 @@ const ChatInterface = () => {
   ]);
 
   const fileInputRef = useRef(null);
-  const menuRef = useRef(null);
 
   /*
      handleFileChange
@@ -50,24 +48,6 @@ const ChatInterface = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  /*
-     useEffect: Click Outside Listener
-     Standard pattern to close the navigation dropdown when a user clicks 
-     anywhere else in the document.
-  */
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   return (
     <div className="chat-wrapper">
       {/* 
@@ -82,27 +62,6 @@ const ChatInterface = () => {
             </svg>
           </div>
           <span className="ai-name">Vibe AI</span>
-        </div>
-
-        <div className="menu-wrapper" ref={menuRef}>
-          <button className="icon-btn" onClick={() => setMenuOpen(!menuOpen)}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
-            </svg>
-          </button>
-          {menuOpen && (
-            <div className="menu-dropdown">
-              <button className="menu-item" onClick={() => setMenuOpen(false)}>Account</button>
-              <button className="menu-item" onClick={() => setMenuOpen(false)}>Settings</button>
-              <hr className="menu-divider" />
-              <button className="menu-item logout-btn" onClick={() => { setMenuOpen(false); }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-                </svg>
-                Logout
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
