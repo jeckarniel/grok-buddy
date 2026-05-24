@@ -179,7 +179,7 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
           <button className="burger-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
             <span></span><span></span><span></span>
           </button>
-          <span className="topbar-title">
+          <span className="topbar-title-text">
             Vibe AI
           </span>
         </div>
