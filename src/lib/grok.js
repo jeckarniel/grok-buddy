@@ -1,9 +1,7 @@
 export async function sendToGrok(messages, onChunk) {
   const response = await fetch('/api/grok', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'grok-3',
       messages: [
@@ -19,8 +17,7 @@ export async function sendToGrok(messages, onChunk) {
 Always provide complete, working code. Never truncate. Use markdown code blocks with language tags.`
         },
         ...messages
-      ],
-      stream: true
+      ]
     })
   })
 
@@ -29,27 +26,8 @@ Always provide complete, working code. Never truncate. Use markdown code blocks 
     throw new Error(err.error?.message || 'Grok API error')
   }
 
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let fullText = ''
-
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-    const chunk = decoder.decode(value)
-    const lines = chunk.split('\n').filter(l => l.startsWith('data: '))
-    for (const line of lines) {
-      const data = line.slice(6)
-      if (data === '[DONE]') continue
-      try {
-        const parsed = JSON.parse(data)
-        const delta = parsed.choices?.[0]?.delta?.content || ''
-        if (delta) {
-          fullText += delta
-          onChunk(delta, fullText)
-        }
-      } catch {}
-    }
-  }
+  const data = await response.json()
+  const fullText = data.choices?.[0]?.message?.content || ''
+  onChunk(fullText, fullText)
   return fullText
 }
