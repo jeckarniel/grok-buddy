@@ -12,22 +12,103 @@ const SUGGESTIONS = [
   'Set up a PostgreSQL database schema',
 ]
 
-function createAttachment(file) {
-  return {
+const TEXT_FILE_EXTENSIONS = /\.(txt|md|json|csv|ts|tsx|js|jsx|py|rb|go|rs|html|css|yml|yaml|xml|log)$/i
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '')
+    reader.onerror = () => reject(reader.error || new Error('Failed to read image file.'))
+    reader.readAsDataURL(file)
+  })
+}
+
+function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '')
+    reader.onerror = () => reject(reader.error || new Error('Failed to read text file.'))
+    reader.readAsText(file)
+  })
+}
+
+function shouldReadTextContent(file) {
+  return file.type.startsWith('text/') || TEXT_FILE_EXTENSIONS.test(file.name)
+}
+
+async function createAttachment(file) {
+  const url = URL.createObjectURL(file)
+  const attachment = {
     id: `${file.name}-${file.size}-${file.lastModified}-${crypto.randomUUID?.() || Math.random().toString(36).slice(2)}`,
     name: file.name,
     type: file.type,
     size: file.size,
-    url: URL.createObjectURL(file),
+    url,
   }
+
+  if (file.type.startsWith('image/')) {
+    attachment.dataUrl = await readFileAsDataUrl(file)
+  } else if (shouldReadTextContent(file)) {
+    attachment.textContent = await readFileAsText(file)
+  }
+
+  return attachment
 }
 
 function formatAttachmentSummary(attachments) {
   if (!attachments.length) return ''
-  const names = attachments.map(file => file.name).join(', ')
+
+  const lines = attachments.map(file => {
+    const kind = file.type?.startsWith('image/') ? 'Image' : 'File'
+    const sizeKb = Math.max(1, Math.round(file.size / 1024))
+    const contextHint = file.type?.startsWith('image/')
+      ? 'Likely screenshot/photo. Use the visual content together with the filename.'
+      : file.textContent
+        ? 'Text content is included below for direct analysis.'
+        : 'Use the filename and file type as context.'
+
+    return `- ${kind}: ${file.name} (${file.type || 'unknown type'}, ${sizeKb} KB) — ${contextHint}`
+  })
+
   return `
 
-Attachments: ${names}`
+Attachment context:
+${lines.join('\n')}`
+}
+
+function buildUserMessageContent(text, attachments) {
+  const parts = []
+
+  if (text.trim()) {
+    parts.push({ type: 'text', text: text.trim() })
+  }
+
+  const summary = formatAttachmentSummary(attachments)
+  if (summary) {
+    parts.push({ type: 'text', text: summary })
+  }
+
+  attachments.forEach((attachment) => {
+    if (attachment.dataUrl) {
+      parts.push({
+        type: 'image_url',
+        image_url: { url: attachment.dataUrl },
+      })
+      return
+    }
+
+    if (attachment.textContent) {
+      const safeText = attachment.textContent.slice(0, 8000)
+      parts.push({
+        type: 'text',
+        text: `File content from ${attachment.name}:\n\`\`\`\n${safeText}\n\`\`\``,
+      })
+    }
+  })
+
+  if (parts.length === 0) return ''
+  if (parts.length === 1 && parts[0].type === 'text') return parts[0].text
+  return parts
 }
 
 export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
@@ -85,11 +166,22 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     if (activeChatId === chatId) handleNewChat()
   }
 
-  const handleFilesChange = (e) => {
+  const handleFilesChange = async (e) => {
     const files = Array.from(e.target.files || [])
     if (!files.length) return
 
-    setAttachments(prev => [...prev, ...files.map(createAttachment)])
+    const nextAttachments = await Promise.all(
+      files.map(async (file) => {
+        try {
+          return await createAttachment(file)
+        } catch (err) {
+          console.error('Attachment read failed:', err)
+          return null
+        }
+      })
+    )
+
+    setAttachments(prev => [...prev, ...nextAttachments.filter(Boolean)])
     e.target.value = ''
   }
 
@@ -107,6 +199,7 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     if ((!content && attachments.length === 0) || loading) return
     setInput('')
 
+    const currentAttachments = attachments
     let chatId = activeChatId
     if (!chatId) {
       const chat = await createChat(content.slice(0, 50) || 'New chat')
@@ -114,8 +207,9 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
       setActiveChatId(chatId)
     }
 
-    const attachmentSummary = formatAttachmentSummary(attachments)
-    const userContent = `${content}${attachmentSummary}`.trim()
+    const attachmentSummary = formatAttachmentSummary(currentAttachments)
+    const userContent = [content, attachmentSummary].filter(Boolean).join('\n\n').trim()
+    const apiUserContent = buildUserMessageContent(content, currentAttachments)
 
     const userMsg = { role: 'user', content: userContent, chat_id: chatId }
     const { data: savedUser } = await supabase.from('messages').insert(userMsg).select().single()
@@ -127,12 +221,12 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     const assistantMsg = { role: 'assistant', content: '', chat_id: chatId }
     setMessages(prev => [...prev, assistantMsg])
 
-    const uploadedAttachments = attachments
+    const uploadedAttachments = currentAttachments
     setAttachments([])
     if (fileInputRef.current) fileInputRef.current.value = ''
 
     try {
-      const history = newMessages.map(m => ({ role: m.role, content: m.content }))
+      const history = [...messages, { role: 'user', content: apiUserContent }]
       let fullText = ''
       await sendToGrok(history, model, (_delta, full) => {
         fullText = full
@@ -224,7 +318,7 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
             </div>
           ) : (
             messages.map((msg, i) => (
-              <Message key={msg.id || i} role={msg.role} content={msg.content} attachments={msg.attachments} />
+              <Message key={msg.id || i} role={msg.role} content={msg.content} />
             ))
           )}
           {loading && messages[messages.length - 1]?.content === '' && (
