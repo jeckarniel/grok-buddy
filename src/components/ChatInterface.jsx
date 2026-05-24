@@ -1,7 +1,7 @@
 /* 
    ChatInterface Component
    Primary UI component managing the chat state, message history, 
-   navigation menu, and universal file upload functionality.
+   and navigation menu.
 */
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatInterface.css';
@@ -11,42 +11,11 @@ const ChatInterface = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [message, setMessage] = useState('');
   
-  /* Data State: Stores metadata for any uploaded file and the conversation history */
-  const [uploadData, setUploadData] = useState({ url: null, name: null, type: null });
+  /* Data State: Stores conversation history */
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! How can I help you today?", isAi: true },
     { id: 2, text: "I need help with some code.", isAi: false }
   ]);
-
-  const fileInputRef = useRef(null);
-
-  /*
-     handleFileChange
-     Processes any file type selected by the user. Generates a temporary URL for 
-     previews and stores the name/type for UI display.
-  */
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (uploadData.url) URL.revokeObjectURL(uploadData.url); // Memory management
-      setUploadData({
-        url: URL.createObjectURL(file),
-        name: file.name,
-        type: file.type
-      });
-    }
-  };
-
-  /*
-     removeUpload
-     Clears the current file selection and revokes the object URL to 
-     prevent memory leaks.
-  */
-  const removeUpload = () => {
-    if (uploadData.url) URL.revokeObjectURL(uploadData.url);
-    setUploadData({ url: null, name: null, type: null });
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
 
   return (
     <div className="chat-wrapper">
@@ -80,36 +49,7 @@ const ChatInterface = () => {
           Input Controls: Handles typing, file uploads (all types), and sending 
       */}
       <div className="input-row-container">
-        {uploadData.name && (
-          <div className="upload-preview-box">
-            {uploadData.type.startsWith('image/') ? (
-              <img src={uploadData.url} alt="preview" />
-            ) : (
-              <div className="file-icon-placeholder">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                  <polyline points="13 2 13 9 20 9"></polyline>
-                </svg>
-                <span className="file-name-text">{uploadData.name}</span>
-              </div>
-            )}
-            <button className="close-preview" onClick={removeUpload}>×</button>
-          </div>
-        )}
-        
         <div className="typing-area">
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileChange} 
-            style={{ display: 'none' }} 
-          />
-          <button className="icon-btn" onClick={() => fileInputRef.current.click()}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-            </svg>
-          </button>
-          
           <input 
             type="text" 
             className="message-input" 

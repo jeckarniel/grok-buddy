@@ -111,7 +111,6 @@
 .user-msg-icon { background: #e2e8f0; color: #475569; }
 .ai-msg-icon { background: #f0f4ff; color: #6366f1; }
 
-/* Input Area & Universal File Uploader */
 .menu-divider {
   margin: 4px 0;
   border: none;
@@ -138,54 +137,6 @@
   border-radius: 24px;
   border: 1px solid #ddd;
   outline: none;
-}
-
-/* Flexible File Preview Box */
-.upload-preview-box {
-  position: relative;
-  min-width: 64px;
-  display: inline-flex;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 4px;
-}
-
-.upload-preview-box img {
-  width: 64px;
-  height: 64px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.file-icon-placeholder {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  color: #64748b;
-}
-
-.file-name-text {
-  font-size: 12px;
-  max-width: 150px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.close-preview {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: #ff4d4d;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
 }
 
 .icon-btn {
