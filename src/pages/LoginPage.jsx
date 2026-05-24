@@ -5,21 +5,19 @@ export default function LoginPage({ onLogin }) {
     <div className="login-page">
       <div className="login-bg">
         <div className="grid-lines"></div>
-        <div className="glow-orb orb1"></div>
-        <div className="glow-orb orb2"></div>
       </div>
       <div className="login-card">
         <div className="login-logo">
-          <span className="logo-icon">⚡</span>
-          <span className="logo-text">Grok<span className="logo-accent">Buddy</span></span>
+          <span className="logo-icon">V</span>
+          <span className="logo-text">Vibe<span className="logo-accent">AI</span></span>
         </div>
-        <p className="login-tagline">Your elite AI coding companion</p>
+        <p className="login-tagline">Your focused AI coding companion</p>
         <div className="login-features">
           <span>Full-stack</span>
-          <span>•</span>
-          <span>No limits</span>
-          <span>•</span>
-          <span>Powered by Grok</span>
+          <span>/</span>
+          <span>Fast answers</span>
+          <span>/</span>
+          <span>Powered by Groq</span>
         </div>
         <button className="google-btn" onClick={onLogin}>
           <svg width="20" height="20" viewBox="0 0 24 24">

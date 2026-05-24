@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Message from '../components/Message'
 import { useChats } from '../hooks/useChats'
@@ -12,7 +12,7 @@ const SUGGESTIONS = [
   'Set up a PostgreSQL database schema',
 ]
 
-export default function ChatPage({ user, onSignOut }) {
+export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeChatId, setActiveChatId] = useState(null)
   const [messages, setMessages] = useState([])
@@ -76,7 +76,7 @@ export default function ChatPage({ user, onSignOut }) {
     try {
       const history = newMessages.map(m => ({ role: m.role, content: m.content }))
       let fullText = ''
-      await sendToGrok(history, model, (delta, full) => {
+      await sendToGrok(history, model, (_delta, full) => {
         fullText = full
         setMessages(prev => {
           const updated = [...prev]
@@ -131,27 +131,31 @@ export default function ChatPage({ user, onSignOut }) {
           onSignOut={onSignOut}
           onClose={() => setSidebarOpen(false)}
           isMobile={sidebarOpen}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
         />
       </div>
 
       <div className="chat-main">
         <div className="chat-topbar">
-          <button className="burger-btn" onClick={() => setSidebarOpen(true)}>☰</button>
-          <span className="topbar-title">⚡ GrokBuddy</span>
+          <button className="burger-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+            <span></span><span></span><span></span>
+          </button>
+          <span className="topbar-title"><span className="brand-mark">V</span> Vibe AI</span>
           <select className="model-select" value={model} onChange={e => setModel(e.target.value)}>
             <option value="openai/gpt-oss-120b">gpt-oss-120b</option>
             <option value="openai/gpt-oss-20b">gpt-oss-20b</option>
             <option value="llama-3.3-70b-versatile">llama-3.3-70b</option>
           </select>
-          <button className="signout-btn" onClick={onSignOut} title="Sign out">⏻</button>
+          <button className="signout-btn" onClick={onSignOut} title="Sign out">Sign out</button>
         </div>
 
         <div className="messages-area">
           {messages.length === 0 ? (
             <div className="welcome">
-              <div className="welcome-icon">⚡</div>
+              <div className="welcome-icon">V</div>
               <h2>What can I help you build?</h2>
-              <p>Your full-stack AI coding buddy, powered by Groq</p>
+              <p>Your full-stack AI coding assistant, powered by Groq</p>
               <div className="suggestions">
                 {SUGGESTIONS.map((s, i) => (
                   <button key={i} className="suggestion-chip" onClick={() => handleSend(s)}>{s}</button>
@@ -180,10 +184,10 @@ export default function ChatPage({ user, onSignOut }) {
               rows={1}
             />
             <button className="send-btn" onClick={() => handleSend()} disabled={!input.trim() || loading}>
-              {loading ? '⏳' : '➤'}
+              {loading ? '...' : 'Send'}
             </button>
           </div>
-          <p className="input-hint">Shift+Enter for new line · Enter to send</p>
+          <p className="input-hint">Shift+Enter for new line / Enter to send</p>
         </div>
       </div>
     </div>

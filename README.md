@@ -1,4 +1,4 @@
-# Grok Buddy - AI Coding Assistant
+# Vibe AI - AI Coding Assistant
 
 React app with a small Vercel API proxy for Groq requests.
 

@@ -1,5 +1,16 @@
 import React from 'react'
 
+function formatInlineText(text) {
+  return text
+    .split(/(\*\*[^*]+\*\*)/g)
+    .map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i}>{part.slice(2, -2)}</strong>
+      }
+      return part.replace(/\*\*/g, '')
+    })
+}
+
 function formatContent(content) {
   const parts = content.split(/(```[\s\S]*?```)/g)
   return parts.map((part, i) => {
@@ -14,7 +25,7 @@ function formatContent(content) {
         </div>
       )
     }
-    return <span key={i} style={{whiteSpace:'pre-wrap'}}>{part}</span>
+    return <span key={i} style={{ whiteSpace: 'pre-wrap' }}>{formatInlineText(part)}</span>
   })
 }
 
@@ -22,7 +33,7 @@ export default function Message({ role, content }) {
   return (
     <div className={`message message-${role}`}>
       <div className="message-avatar">
-        {role === 'assistant' ? '⚡' : '👤'}
+        {role === 'assistant' ? 'V' : 'You'}
       </div>
       <div className="message-content">
         {formatContent(content)}
