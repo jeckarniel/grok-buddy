@@ -12,6 +12,24 @@ const SUGGESTIONS = [
   'Set up a PostgreSQL database schema',
 ]
 
+function createAttachment(file) {
+  return {
+    id: `${file.name}-${file.size}-${file.lastModified}-${crypto.randomUUID?.() || Math.random().toString(36).slice(2)}`,
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    url: URL.createObjectURL(file),
+  }
+}
+
+function formatAttachmentSummary(attachments) {
+  if (!attachments.length) return ''
+  const names = attachments.map(file => file.name).join(', ')
+  return `
+
+Attachments: ${names}`
+}
+
 export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeChatId, setActiveChatId] = useState(null)
@@ -19,14 +37,27 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [model, setModel] = useState('openai/gpt-oss-120b')
+  const [attachments, setAttachments] = useState([])
   const bottomRef = useRef(null)
   const textareaRef = useRef(null)
+  const fileInputRef = useRef(null)
+  const attachmentsRef = useRef([])
 
   const { chats, createChat, updateChatTitle, deleteChat } = useChats(user.id)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    attachmentsRef.current = attachments
+  }, [attachments])
+
+  useEffect(() => {
+    return () => {
+      attachmentsRef.current.forEach(file => URL.revokeObjectURL(file.url))
+    }
+  }, [])
 
   const loadMessages = async (chatId) => {
     const { data } = await supabase
@@ -45,6 +76,8 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const handleNewChat = () => {
     setActiveChatId(null)
     setMessages([])
+    setAttachments([])
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const handleDeleteChat = async (chatId) => {
@@ -52,26 +85,51 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     if (activeChatId === chatId) handleNewChat()
   }
 
+  const handleFilesChange = (e) => {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+
+    setAttachments(prev => [...prev, ...files.map(createAttachment)])
+    e.target.value = ''
+  }
+
+  const removeAttachment = (id) => {
+    setAttachments(prev => {
+      const next = prev.filter(file => file.id !== id)
+      const removed = prev.find(file => file.id === id)
+      if (removed) URL.revokeObjectURL(removed.url)
+      return next
+    })
+  }
+
   const handleSend = async (text) => {
     const content = text || input.trim()
-    if (!content || loading) return
+    if ((!content && attachments.length === 0) || loading) return
     setInput('')
 
     let chatId = activeChatId
     if (!chatId) {
-      const chat = await createChat(content.slice(0, 50))
+      const chat = await createChat(content.slice(0, 50) || 'New chat')
       chatId = chat.id
       setActiveChatId(chatId)
     }
 
-    const userMsg = { role: 'user', content, chat_id: chatId }
+    const attachmentSummary = formatAttachmentSummary(attachments)
+    const userContent = `${content}${attachmentSummary}`.trim()
+
+    const userMsg = { role: 'user', content: userContent, chat_id: chatId }
     const { data: savedUser } = await supabase.from('messages').insert(userMsg).select().single()
-    const newMessages = [...messages, savedUser]
+    const displayUserMessage = savedUser || { ...userMsg, id: crypto.randomUUID?.() || Date.now() }
+    const newMessages = [...messages, displayUserMessage]
     setMessages(newMessages)
 
     setLoading(true)
     const assistantMsg = { role: 'assistant', content: '', chat_id: chatId }
     setMessages(prev => [...prev, assistantMsg])
+
+    const uploadedAttachments = attachments
+    setAttachments([])
+    if (fileInputRef.current) fileInputRef.current.value = ''
 
     try {
       const history = newMessages.map(m => ({ role: m.role, content: m.content }))
@@ -97,7 +155,7 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
       })
 
       if (newMessages.length === 1) {
-        await updateChatTitle(chatId, content.slice(0, 50))
+        await updateChatTitle(chatId, content.slice(0, 50) || 'New chat')
       }
     } catch (err) {
       setMessages(prev => {
@@ -105,8 +163,10 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
         updated[updated.length - 1] = { ...assistantMsg, content: `Error: ${err.message}` }
         return updated
       })
+    } finally {
+      uploadedAttachments.forEach(file => URL.revokeObjectURL(file.url))
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handleKeyDown = (e) => {
@@ -164,17 +224,56 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
             </div>
           ) : (
             messages.map((msg, i) => (
-              <Message key={msg.id || i} role={msg.role} content={msg.content} />
+              <Message key={msg.id || i} role={msg.role} content={msg.content} attachments={msg.attachments} />
             ))
           )}
           {loading && messages[messages.length - 1]?.content === '' && (
-            <div className="typing-indicator"><span/><span/><span/></div>
+            <div className="typing-indicator"><span /><span /><span /></div>
           )}
           <div ref={bottomRef} />
         </div>
 
         <div className="input-area">
+          {!!attachments.length && (
+            <div className="attachment-preview-list">
+              {attachments.map(file => (
+                <div key={file.id} className="attachment-preview-card">
+                  {file.type.startsWith('image/') ? (
+                    <img src={file.url} alt={file.name} className="attachment-thumb" />
+                  ) : (
+                    <div className="attachment-file-icon">File</div>
+                  )}
+                  <div className="attachment-meta">
+                    <div className="attachment-name">{file.name}</div>
+                    <div className="attachment-size">{Math.max(1, Math.round(file.size / 1024))} KB</div>
+                  </div>
+                  <button className="attachment-remove" onClick={() => removeAttachment(file.id)} aria-label={`Remove ${file.name}`}>
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="input-box">
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden-file-input"
+              multiple
+              onChange={handleFilesChange}
+            />
+            <button
+              className="upload-btn"
+              onClick={() => fileInputRef.current?.click()}
+              type="button"
+              disabled={loading}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+              </svg>
+              Upload files
+            </button>
             <textarea
               ref={textareaRef}
               value={input}
@@ -183,7 +282,7 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
               placeholder="Ask anything about code..."
               rows={1}
             />
-            <button className="send-btn" onClick={() => handleSend()} disabled={!input.trim() || loading}>
+            <button className="send-btn" onClick={() => handleSend()} disabled={(!input.trim() && attachments.length === 0) || loading}>
               {loading ? '...' : 'Send'}
             </button>
           </div>
