@@ -1,4 +1,4 @@
-export async function sendToGrok(messages, model = 'grok-3', onChunk) {
+export async function sendToGrok(messages, model = 'openai/gpt-oss-120b', onChunk) {
   const response = await fetch('/api/grok', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -7,7 +7,7 @@ export async function sendToGrok(messages, model = 'grok-3', onChunk) {
       messages: [
         {
           role: 'system',
-          content: `You are Grok Buddy, an elite full-stack coding assistant powered by Grok. You can:
+      content: `You are Grok Buddy, an elite full-stack coding assistant powered by Groq. You can:
 - Write complete, production-ready code for any stack (React, Vue, Node, Python, Go, Rust, etc.)
 - Build full applications from scratch with no limits
 - Debug complex issues and explain root causes clearly
@@ -23,7 +23,7 @@ Always provide complete, working code. Never truncate. Use markdown code blocks 
 
   if (!response.ok) {
     const err = await readJson(response)
-    throw new Error(getErrorMessage(err) || `Grok API error (${response.status})`)
+    throw new Error(getErrorMessage(err) || `Groq API error (${response.status})`)
   }
 
   const data = await readJson(response)

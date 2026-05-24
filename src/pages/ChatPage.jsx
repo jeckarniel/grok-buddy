@@ -18,7 +18,7 @@ export default function ChatPage({ user, onSignOut }) {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [model, setModel] = useState('grok-3')
+  const [model, setModel] = useState('openai/gpt-oss-120b')
   const bottomRef = useRef(null)
   const textareaRef = useRef(null)
 
@@ -139,9 +139,9 @@ export default function ChatPage({ user, onSignOut }) {
           <button className="burger-btn" onClick={() => setSidebarOpen(true)}>☰</button>
           <span className="topbar-title">⚡ GrokBuddy</span>
           <select className="model-select" value={model} onChange={e => setModel(e.target.value)}>
-            <option value="grok-3">grok-3</option>
-            <option value="grok-3-mini">grok-3-mini</option>
-            <option value="grok-2">grok-2</option>
+            <option value="openai/gpt-oss-120b">gpt-oss-120b</option>
+            <option value="openai/gpt-oss-20b">gpt-oss-20b</option>
+            <option value="llama-3.3-70b-versatile">llama-3.3-70b</option>
           </select>
           <button className="signout-btn" onClick={onSignOut} title="Sign out">⏻</button>
         </div>
@@ -151,7 +151,7 @@ export default function ChatPage({ user, onSignOut }) {
             <div className="welcome">
               <div className="welcome-icon">⚡</div>
               <h2>What can I help you build?</h2>
-              <p>Your full-stack AI coding buddy, powered by Grok</p>
+              <p>Your full-stack AI coding buddy, powered by Groq</p>
               <div className="suggestions">
                 {SUGGESTIONS.map((s, i) => (
                   <button key={i} className="suggestion-chip" onClick={() => handleSend(s)}>{s}</button>

@@ -8,9 +8,11 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: { message: 'Method not allowed' } })
   }
 
-  if (!process.env.GROK_API_KEY) {
+  const apiKey = process.env.GROQ_API_KEY || process.env.GROK_API_KEY
+
+  if (!apiKey) {
     return res.status(500).json({
-      error: { message: 'Missing GROK_API_KEY on the server.' }
+      error: { message: 'Missing GROQ_API_KEY on the server.' }
     })
   }
 
@@ -36,16 +38,16 @@ module.exports = async function handler(req, res) {
     }
 
     const payload = {
-      model: typeof body.model === 'string' && body.model.trim() ? body.model : 'grok-3',
+      model: typeof body.model === 'string' && body.model.trim() ? body.model : 'openai/gpt-oss-120b',
       messages: validMessages,
       stream: false
     }
 
-    const response = await fetch('https://api.x.ai/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.GROK_API_KEY}`
+        Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify(payload)
     })
@@ -55,11 +57,11 @@ module.exports = async function handler(req, res) {
     try {
       data = text ? JSON.parse(text) : {}
     } catch {
-      data = { error: { message: text || 'Grok returned a non-JSON response.' } }
+      data = { error: { message: text || 'Groq returned a non-JSON response.' } }
     }
 
     if (!response.ok) {
-      console.error('Grok API error:', response.status, JSON.stringify(data).slice(0, 500))
+      console.error('Groq API error:', response.status, JSON.stringify(data).slice(0, 500))
     }
 
     return res.status(response.status).json(data)

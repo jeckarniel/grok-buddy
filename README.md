@@ -1,13 +1,13 @@
 # Grok Buddy - AI Coding Assistant
 
-React app with a small Vercel API proxy for Grok requests.
+React app with a small Vercel API proxy for Groq requests.
 
 ## Setup
 
 1. Copy `.env.example` to `.env.local` and fill in your keys:
    - `VITE_SUPABASE_URL` - from Supabase project settings
    - `VITE_SUPABASE_ANON_KEY` - from Supabase API keys (publishable key)
-   - `GROK_API_KEY` - your xAI/Grok API key, set only on the server/Vercel
+   - `GROQ_API_KEY` - your Groq API key, set only on the server/Vercel
 
 2. Install and run:
    ```sh
