@@ -1,9 +1,9 @@
-export async function sendToGrok(messages, onChunk) {
+export async function sendToGrok(messages, model = 'grok-3', onChunk) {
   const response = await fetch('/api/grok', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'grok-3',
+      model,
       messages: [
         {
           role: 'system',

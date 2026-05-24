@@ -76,7 +76,7 @@ export default function ChatPage({ user, onSignOut }) {
     try {
       const history = newMessages.map(m => ({ role: m.role, content: m.content }))
       let fullText = ''
-      await sendToGrok(history, (delta, full) => {
+      await sendToGrok(history, model, (delta, full) => {
         fullText = full
         setMessages(prev => {
           const updated = [...prev]
@@ -118,10 +118,8 @@ export default function ChatPage({ user, onSignOut }) {
 
   return (
     <div className="chat-layout">
-      {/* Mobile overlay */}
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
 
-      {/* Sidebar */}
       <div className={`sidebar-wrapper ${sidebarOpen ? 'open' : ''}`}>
         <Sidebar
           user={user}
@@ -136,7 +134,6 @@ export default function ChatPage({ user, onSignOut }) {
         />
       </div>
 
-      {/* Main area */}
       <div className="chat-main">
         <div className="chat-topbar">
           <button className="burger-btn" onClick={() => setSidebarOpen(true)}>☰</button>
