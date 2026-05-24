@@ -326,17 +326,24 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
             <option value="llama-3.3-70b-versatile">llama-3.3-70b</option>
           </select>
           
-          <div className="menu-wrapper" ref={menuRef} style={{ position: 'relative' }}>
-            <button className="icon-btn" onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px' }}>
+          <div className="menu-wrapper" ref={menuRef}>
+            <button className="icon-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Open settings menu">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
               </svg>
             </button>
             {menuOpen && (
               <div className="menu-dropdown">
-                <button className="menu-item" onClick={() => { setMenuOpen(false); setSidebarOpen(true); }}>History</button>
+                <button className="menu-item" onClick={() => { setMenuOpen(false); setSidebarOpen(true); }}>
+                  History
+                </button>
                 <hr className="menu-divider" />
-                <button className="menu-item logout-btn" onClick={onSignOut}>Sign out</button>
+                <button className="menu-item logout-btn" onClick={onSignOut}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                  </svg>
+                  Sign out
+                </button>
               </div>
             )}
           </div>
