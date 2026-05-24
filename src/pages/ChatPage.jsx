@@ -175,11 +175,6 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
           <span className="topbar-title">
             Vibe AI
           </span>
-          <select className="model-select" value={model} onChange={e => setModel(e.target.value)}>
-            <option value="openai/gpt-oss-120b">gpt-oss-120b</option>
-            <option value="openai/gpt-oss-20b">gpt-oss-20b</option>
-            <option value="llama-3.3-70b-versatile">llama-3.3-70b</option>
-          </select>
         </div>
 
         <div className="messages-area">
@@ -222,6 +217,18 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
               placeholder="Ask anything about code..."
               rows={1}
             />
+            <div className="model-selector-wrapper">
+              <button className="model-icon-btn" type="button" title="Select Model">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </button>
+              <select className="model-select-hidden" value={model} onChange={e => setModel(e.target.value)}>
+                <option value="openai/gpt-oss-120b">gpt-oss-120b (Elite)</option>
+                <option value="openai/gpt-oss-20b">gpt-oss-20b (Fast)</option>
+                <option value="llama-3.3-70b-versatile">llama-3.3-70b (Versatile)</option>
+              </select>
+            </div>
             <button className="send-btn" onClick={() => handleSend()} disabled={!input.trim() || loading}>
               {loading ? '...' : 'Send'}
             </button>
