@@ -96,9 +96,16 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   }
 
   const handleDeleteChat = async (chatId) => {
+    // Prevent accidental chat selection when clicking the delete control.
+    // Also stop if we are currently sending messages.
+    if (loading) return
+
     await deleteChat(chatId)
+
     if (activeChatId === chatId) handleNewChat()
   }
+
+
 
   const handleSend = async (text) => {
     const content = text || input.trim()
