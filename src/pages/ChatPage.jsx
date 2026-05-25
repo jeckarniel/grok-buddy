@@ -21,6 +21,12 @@ const SUGGESTION_POOL = [
   'Explore GraphQL with Apollo Client',
 ]
 
+const MODELS = [
+  { id: 'openai/gpt-oss-120b', name: 'gpt(elite)', description: 'Most capable model' },
+  { id: 'openai/gpt-oss-20b', name: 'gpt(fast)', description: 'Optimized for speed' },
+  { id: 'llama-3.3-70b-versatile', name: 'Llama(Versatile)', description: 'Balanced performance' },
+]
+
 export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeChatId, setActiveChatId] = useState(null)
@@ -116,11 +122,12 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
     setLoading(true)
     const assistantMsg = { role: 'assistant', content: '', chat_id: chatId }
     setMessages(prev => [...prev, assistantMsg])
+    
+    const currentHistory = [...messages, { role: 'user', content: content }]
 
     try {
-      const history = [...messages, { role: 'user', content: content }]
       let fullText = ''
-      await sendToGrok(history, model, (_delta, full) => {
+      await sendToGrok(currentHistory, model, (_delta, full) => {
         fullText = full
         setMessages(prev => {
           const updated = [...prev]
@@ -251,27 +258,19 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
               {showModelMenu && (
                 <div className="model-popup-menu">
                   <div className="menu-header">Select Intelligence</div>
-                  <button 
-                    className={`menu-opt ${model === 'openai/gpt-oss-120b' ? 'selected' : ''}`}
-                    onClick={() => { setModel('openai/gpt-oss-120b'); setShowModelMenu(false); }}
-                  >
-                    <span className="opt-name">gpt(elite)</span>
-                    <span className="opt-desc">Most capable for complex logic</span>
-                  </button>
-                  <button 
-                    className={`menu-opt ${model === 'openai/gpt-oss-20b' ? 'selected' : ''}`}
-                    onClick={() => { setModel('openai/gpt-oss-20b'); setShowModelMenu(false); }}
-                  >
-                    <span className="opt-name">gpt(fat)</span>
-                    <span className="opt-desc">Speed optimized responses</span>
-                  </button>
-                  <button 
-                    className={`menu-opt ${model === 'llama-3.3-70b-versatile' ? 'selected' : ''}`}
-                    onClick={() => { setModel('llama-3.3-70b-versatile'); setShowModelMenu(false); }}
-                  >
-                    <span className="opt-name">Illama(Versalite)</span>
-                    <span className="opt-desc">Open source power</span>
-                  </button>
+                  {MODELS.map((m) => (
+                    <button 
+                      key={m.id}
+                      className={`menu-opt ${model === m.id ? 'selected' : ''}`}
+                      onClick={() => { 
+                        setModel(m.id); 
+                        setShowModelMenu(false); 
+                      }}
+                      title={m.description}
+                    >
+                      <span className="opt-name">{m.name}</span>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
