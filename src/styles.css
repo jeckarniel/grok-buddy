@@ -959,9 +959,13 @@ button {
   }
 
 /* Model selector (AI intelligence dropdown) */
-.model-selector-container {
-  position: relative;
-}
+ .model-selector-container {
+   position: absolute;
+   right: 16px;
+   top: -44px;
+   z-index: 60;
+ }
+
 
 .model-selector-btn {
   height: 34px;
