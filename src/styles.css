@@ -850,12 +850,12 @@ button {
 
 .input-box {
   display: flex;
-  align-items: flex-end;
-  gap: 10px;
+  flex-direction: column;
+  gap: 0;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 10px 10px 10px 16px;
+  border-radius: 16px;
+  padding: 12px 12px 8px 16px;
   transition: border-color .18s ease, box-shadow .18s ease;
 }
 
@@ -866,8 +866,8 @@ button {
 
 .input-box textarea {
   flex: 1;
-  min-width: 0;
-  min-height: 32px;
+  width: 100%;
+  min-height: 28px;
   max-height: 180px;
   resize: none;
   border: none;
@@ -876,31 +876,183 @@ button {
   color: var(--text);
   line-height: 1.55;
   font-size: .96rem;
+  margin-bottom: 8px;
 }
 
 .input-box textarea::placeholder {
   color: var(--text2);
 }
 
+/* Bottom toolbar inside the input box */
+.input-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+}
+
+.input-bottom-left {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input-bottom-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* Model selector — now lives inside the input box bottom bar */
+.model-selector-btn {
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text);
+  cursor: pointer;
+  font-size: .8rem;
+  font-weight: 700;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.model-selector-btn:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.model-selector-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.model-selector-btn.active {
+  border-color: color-mix(in srgb, var(--accent) 65%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+}
+
+.model-label {
+  font-size: .8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.chevron {
+  transition: transform .18s ease;
+  opacity: .7;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Popup opens UPWARD from bottom bar */
+.model-popup-menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: min(340px, 80vw);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 8px;
+  z-index: 200;
+  transform-origin: bottom left;
+  animation: modelMenuIn .12s ease-out;
+}
+
+@keyframes modelMenuIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.menu-header {
+  padding: 6px 10px 8px;
+  font-weight: 900;
+  color: var(--text2);
+  font-size: .74rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.menu-opt {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  text-align: left;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text);
+  transition: background .16s ease, border-color .16s ease;
+}
+
+.menu-opt:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.menu-opt.selected {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.menu-opt:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.opt-name {
+  font-weight: 800;
+  font-size: .9rem;
+}
+
+.opt-desc {
+  color: var(--text2);
+  font-weight: 600;
+  font-size: .76rem;
+  line-height: 1.2;
+}
+
+/* Send button — icon only, round */
 .send-btn {
-  min-width: 70px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   border-radius: 10px;
   background: var(--accent);
   color: #ffffff;
-  font-weight: 800;
   cursor: pointer;
-  transition: filter .18s ease, opacity .18s ease;
+  flex-shrink: 0;
+  transition: filter .18s ease, opacity .18s ease, transform .18s ease;
 }
 
 .send-btn:hover:not(:disabled) {
-  filter: brightness(1.08);
+  filter: brightness(1.1);
+  transform: scale(1.04);
 }
 
 .send-btn:disabled {
-  opacity: .45;
+  opacity: .35;
   cursor: not-allowed;
+  transform: none;
 }
 
 .input-hint {
@@ -957,131 +1109,6 @@ button {
   .topbar-title .brand-mark {
     display: none;
   }
-
-/* Model selector (AI intelligence dropdown) */
- .model-selector-container {
-   position: absolute;
-   right: 16px;
-   top: -44px;
-   z-index: 60;
- }
-
-
-.model-selector-btn {
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--bg3);
-  color: var(--text);
-  cursor: pointer;
-  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
-}
-
-.model-selector-btn:hover {
-  border-color: var(--accent);
-  background: var(--surface);
-}
-
-.model-selector-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
-}
-
-.model-selector-btn.active {
-  border-color: color-mix(in srgb, var(--accent) 65%, transparent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
-}
-
-.model-label {
-  font-size: .82rem;
-  font-weight: 800;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 140px;
-}
-
-.chevron {
-  transition: transform .18s ease;
-}
-
-.chevron.open {
-  transform: rotate(180deg);
-}
-
-.model-popup-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 10px);
-  width: min(360px, 72vw);
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 10px;
-  z-index: 50;
-  transform-origin: top right;
-  animation: modelMenuIn .12s ease-out;
-}
-
-@keyframes modelMenuIn {
-  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.menu-header {
-  padding: 8px 10px 10px;
-  font-weight: 900;
-  color: var(--text);
-  font-size: .82rem;
-  letter-spacing: .02em;
-}
-
-.menu-opt {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2px;
-  text-align: left;
-  padding: 10px 10px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: pointer;
-  color: var(--text);
-  transition: background .16s ease, border-color .16s ease, transform .16s ease;
-}
-
-.menu-opt:hover {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-}
-
-.menu-opt.selected {
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-}
-
-.menu-opt:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
-}
-
-.opt-name {
-  font-weight: 900;
-  font-size: .92rem;
-}
-
-.opt-desc {
-  color: var(--text2);
-  font-weight: 700;
-  font-size: .78rem;
-  line-height: 1.2;
-}
 
 /* keep old responsive selector block for safety */
 .model-select {

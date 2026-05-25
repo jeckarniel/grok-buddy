@@ -235,47 +235,8 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
         </div>
 
         <div className="input-area">
-          <div className="model-selector-container" ref={menuRef}>
-            <button 
-              className={`model-selector-btn ${showModelMenu ? 'active' : ''}`}
-              onClick={() => setShowModelMenu(!showModelMenu)}
-              title="Change AI Intelligence"
-            >
-              <svg className="ai-sparkle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-              </svg>
-              <span className="model-label" title={MODELS.find(m => m.id === model)?.name || ''}>
-                {MODELS.find(m => m.id === model)?.name || 'Select intelligence'}
-              </span>
-
-              <svg className={`chevron ${showModelMenu ? 'open' : ''}`} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m6 9 6 6 6-6"/>
-              </svg>
-            </button>
-
-            {showModelMenu && (
-              <div className="model-popup-menu">
-                <div className="menu-header">Select Intelligence</div>
-                {MODELS.map((m) => (
-                  <button 
-                    key={m.id}
-                    className={`menu-opt ${model === m.id ? 'selected' : ''}`}
-                    onClick={() => { 
-                      setModel(m.id);
-                      setShowModelMenu(false);
-                    }}
-                  >
-                    <span className="opt-name">{m.name}</span>
-                    <span className="opt-desc">{m.description}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
           <div className="input-box">
             <textarea
-
               ref={textareaRef}
               value={input}
               onChange={handleInputChange}
@@ -283,10 +244,58 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
               placeholder="Ask anything about code..."
               rows={1}
             />
-            <button className="send-btn" onClick={() => handleSend()} disabled={!input.trim() || loading}>
+            <div className="input-bottom-bar">
+              <div className="input-bottom-left" ref={menuRef}>
+                <button
+                  className={`model-selector-btn ${showModelMenu ? 'active' : ''}`}
+                  onClick={() => setShowModelMenu(!showModelMenu)}
+                  title="Change AI Intelligence"
+                >
+                  <svg className="ai-sparkle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                  </svg>
+                  <span className="model-label" title={MODELS.find(m => m.id === model)?.name || ''}>
+                    {MODELS.find(m => m.id === model)?.name || 'Select model'}
+                  </span>
+                  <svg className={`chevron ${showModelMenu ? 'open' : ''}`} width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </button>
 
-              {loading ? '...' : 'Send'}
-            </button>
+                {showModelMenu && (
+                  <div className="model-popup-menu">
+                    <div className="menu-header">Select Intelligence</div>
+                    {MODELS.map((m) => (
+                      <button
+                        key={m.id}
+                        className={`menu-opt ${model === m.id ? 'selected' : ''}`}
+                        onClick={() => {
+                          setModel(m.id);
+                          setShowModelMenu(false);
+                        }}
+                      >
+                        <span className="opt-name">{m.name}</span>
+                        <span className="opt-desc">{m.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="input-bottom-right">
+                <button className="send-btn" onClick={() => handleSend()} disabled={!input.trim() || loading}>
+                  {loading ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M4.5 10.5 12 3l7.5 7.5M12 3v18"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
           <p className="input-hint">Shift+Enter for new line / Enter to send</p>
         </div>
