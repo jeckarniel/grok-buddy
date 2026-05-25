@@ -246,12 +246,18 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
             />
             <div className="model-selector-container" ref={menuRef}>
               <button 
-                className={`model-icon-only-btn ${showModelMenu ? 'active' : ''}`} 
+                className={`model-selector-btn ${showModelMenu ? 'active' : ''}`} 
                 onClick={() => setShowModelMenu(!showModelMenu)}
-                title="Change Model"
+                title="Change AI Intelligence"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="ai-sparkle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                </svg>
+                <span className="model-label">
+                  {MODELS.find(m => m.id === model)?.name.split('(')[0]}
+                </span>
+                <svg className={`chevron ${showModelMenu ? 'open' : ''}`} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m6 9 6 6 6-6"/>
                 </svg>
               </button>
               
@@ -266,9 +272,9 @@ export default function ChatPage({ user, onSignOut, theme, onToggleTheme }) {
                         setModel(m.id); 
                         setShowModelMenu(false); 
                       }}
-                      title={m.description}
                     >
                       <span className="opt-name">{m.name}</span>
+                      <span className="opt-desc">{m.description}</span>
                     </button>
                   ))}
                 </div>
